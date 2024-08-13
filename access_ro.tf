@@ -1,5 +1,5 @@
 resource "scaleway_iam_application" "ro" {
-  name        = format("SDB - %s - RW", var.name)
+  name        = format("SDB - %s - RO", var.name)
   description = format("Read access to Serverless SQL Database %s", var.name)
 }
 
