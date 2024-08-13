@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "keys_ttl" {
+  description = "TTL of IAM keys in days."
+  type        = number
+  default     = 0
+}
+
 variable "min_cpu" {
   description = "Minimum number of CPU units for your database."
   type        = number
