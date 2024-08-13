@@ -17,5 +17,6 @@ resource "scaleway_iam_policy" "admin" {
 }
 
 resource "scaleway_iam_api_key" "admin" {
-  application_id = scaleway_iam_application.admin.id
+  application_id     = scaleway_iam_application.admin.id
+  default_project_id = data.scaleway_account_project.current.id
 }
