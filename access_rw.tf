@@ -15,5 +15,6 @@ resource "scaleway_iam_policy" "rw" {
 }
 
 resource "scaleway_iam_api_key" "rw" {
-  application_id = scaleway_iam_application.rw.id
+  application_id     = scaleway_iam_application.rw.id
+  default_project_id = data.scaleway_account_project.current.id
 }
