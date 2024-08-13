@@ -29,7 +29,17 @@ module "sdb" {
 
 | Name | Type |
 |------|------|
+| [scaleway_iam_api_key.admin](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_api_key) | resource |
+| [scaleway_iam_api_key.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_api_key) | resource |
+| [scaleway_iam_api_key.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_api_key) | resource |
+| [scaleway_iam_application.admin](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_application) | resource |
+| [scaleway_iam_application.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_application) | resource |
+| [scaleway_iam_application.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_application) | resource |
+| [scaleway_iam_policy.admin](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
+| [scaleway_iam_policy.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
+| [scaleway_iam_policy.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_sdb_sql_database.main](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/sdb_sql_database) | resource |
+| [scaleway_account_project.current](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/data-sources/account_project) | data source |
 
 ## Inputs
 
@@ -44,7 +54,10 @@ module "sdb" {
 
 | Name | Description |
 |------|-------------|
+| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string to connect with admin permissions. |
 | <a name="output_endpoint"></a> [endpoint](#output_endpoint) | Endpoint of the database. |
+| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string to connect with read only permissions. |
+| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string to connect with read/write permissions. |
 <!-- END_TF_DOCS -->
 
 ## Authors
