@@ -24,7 +24,7 @@ module "sdb" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 0.13 |
 | <a name="requirement_scaleway"></a> [scaleway](#requirement_scaleway) | >= 2.43.0 |
-| <a name="requirement_time"></a> [time](#requirement_time) | 0.12.1 |
+| <a name="requirement_time"></a> [time](#requirement_time) | 0.13.1 |
 
 ## Resources
 
@@ -40,7 +40,7 @@ module "sdb" {
 | [scaleway_iam_policy.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_iam_policy.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_sdb_sql_database.main](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/sdb_sql_database) | resource |
-| [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/0.12.1/docs/resources/rotating) | resource |
+| [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/0.13.1/docs/resources/rotating) | resource |
 | [scaleway_account_project.current](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/data-sources/account_project) | data source |
 
 ## Inputs
