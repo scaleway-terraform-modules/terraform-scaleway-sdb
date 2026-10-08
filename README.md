@@ -24,7 +24,7 @@ module "sdb" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 0.13 |
 | <a name="requirement_scaleway"></a> [scaleway](#requirement_scaleway) | >= 2.43.0 |
-| <a name="requirement_time"></a> [time](#requirement_time) | 0.13.1 |
+| <a name="requirement_time"></a> [time](#requirement_time) | 0.14.2 |
 
 ## Resources
 
@@ -40,13 +40,13 @@ module "sdb" {
 | [scaleway_iam_policy.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_iam_policy.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_sdb_sql_database.main](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/sdb_sql_database) | resource |
-| [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/0.13.1/docs/resources/rotating) | resource |
+| [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/0.14.2/docs/resources/rotating) | resource |
 | [scaleway_account_project.current](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/data-sources/account_project) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+|------|-------------|------|---------|----------|
 | <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
