@@ -12,6 +12,7 @@ This repository is used to manage Serverless Databases on scaleway using terrafo
 ```hcl
 module "sdb" {
   source  = "scaleway-terraform-modules/sdb/scaleway"
+  version = "~> 0.0"
 
   # insert required variables here
 }
