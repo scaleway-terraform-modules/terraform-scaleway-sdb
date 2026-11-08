@@ -18,6 +18,13 @@ module "sdb" {
 }
 ```
 
+### Key rotation
+
+With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after their creation. Terraform replaces them `keys_rotation_window` days (7 by default) before they expire, but only when it runs:
+
+- Apply the module at least once during the rotation window (e.g. with a scheduled pipeline), or the keys expire and the connection strings stop working.
+- The new keys are created before the old ones are deleted, but both happen in the same apply: update the consumers of the connection strings in that apply too.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -49,6 +56,7 @@ module "sdb" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
+| <a name="input_keys_rotation_window"></a> [keys_rotation_window](#input_keys_rotation_window) | Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0. | `number` | `7` | no |
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
 | <a name="input_min_cpu"></a> [min_cpu](#input_min_cpu) | Minimum number of CPU units for your database. | `number` | `0` | no |

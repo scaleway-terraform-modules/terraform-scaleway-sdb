@@ -19,5 +19,9 @@ resource "scaleway_iam_policy" "admin" {
 resource "scaleway_iam_api_key" "admin" {
   application_id     = scaleway_iam_application.admin.id
   default_project_id = data.scaleway_account_project.current.id
-  expires_at         = var.keys_ttl > 0 ? time_rotating.keys_ttl[0].rotation_rfc3339 : null
+  expires_at         = local.keys_expires_at
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
