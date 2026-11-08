@@ -49,7 +49,6 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 | [scaleway_iam_policy.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_sdb_sql_database.main](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/sdb_sql_database) | resource |
 | [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/rotating) | resource |
-| [scaleway_account_project.current](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/data-sources/account_project) | data source |
 
 ## Inputs
 
@@ -60,7 +59,8 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
 | <a name="input_min_cpu"></a> [min_cpu](#input_min_cpu) | Minimum number of CPU units for your database. | `number` | `0` | no |
-| <a name="input_region"></a> [region](#input_region) | Region in which the resource exists. | `string` | `null` | no |
+| <a name="input_project_id"></a> [project_id](#input_project_id) | ID of the project the database is associated with. Resource will be created in the project set at the provider level if null. Changing it recreates the database, and its data is lost. | `string` | `null` | no |
+| <a name="input_region"></a> [region](#input_region) | Region in which the database should be created, e.g. `fr-par`. Resource will be created in the region set at the provider level if null. Changing it recreates the database, and its data is lost. | `string` | `null` | no |
 
 ## Outputs
 
