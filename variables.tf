@@ -61,3 +61,9 @@ variable "access_levels" {
     error_message = "'access_levels' must only contain 'admin', 'rw' and 'ro'."
   }
 }
+
+variable "postgresql_version" {
+  description = "PostgreSQL major version of the database, e.g. `16`. The API's default version is used when null. Changing it recreates the database, and its data is lost: see the README to upgrade."
+  type        = string
+  default     = null
+}
