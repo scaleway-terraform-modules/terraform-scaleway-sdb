@@ -4,7 +4,8 @@ resource "scaleway_sdb_sql_database" "main" {
   min_cpu = var.min_cpu
   max_cpu = var.max_cpu
 
-  region = var.region
+  project_id = var.project_id
+  region     = var.region
 }
 
 # The keys are rotated `keys_rotation_window` days before they expire, so that

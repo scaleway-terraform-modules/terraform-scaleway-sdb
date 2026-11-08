@@ -22,7 +22,7 @@ variable "max_cpu" {
 }
 
 variable "region" {
-  description = "Region in which the resource exists."
+  description = "Region in which the database should be created, e.g. `fr-par`. Resource will be created in the region set at the provider level if null. Changing it recreates the database, and its data is lost."
   type        = string
   default     = null
 }
@@ -42,4 +42,10 @@ variable "keys_rotation_window" {
     condition     = coalesce(var.keys_ttl, 0) <= 0 || var.keys_rotation_window < var.keys_ttl
     error_message = "'keys_rotation_window' must be lower than 'keys_ttl'."
   }
+}
+
+variable "project_id" {
+  description = "ID of the project the database is associated with. Resource will be created in the project set at the provider level if null. Changing it recreates the database, and its data is lost."
+  type        = string
+  default     = null
 }
