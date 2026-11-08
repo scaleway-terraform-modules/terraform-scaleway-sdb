@@ -1,11 +1,11 @@
 resource "scaleway_iam_application" "ro" {
   name        = format("SDB - %s - RO", var.name)
-  description = format("Read access to Serverless SQL Database %s", var.name)
+  description = format("Read access to the Serverless SQL Databases in the project of %s", var.name)
 }
 
 resource "scaleway_iam_policy" "ro" {
   name           = format("SDB - %s - RO", var.name)
-  description    = format("Read access to Serverless SQL Database %s", var.name)
+  description    = format("Read access to the Serverless SQL Databases in the project of %s", var.name)
   application_id = scaleway_iam_application.ro.id
 
   rule {
