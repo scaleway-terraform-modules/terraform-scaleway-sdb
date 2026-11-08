@@ -6,6 +6,21 @@ resource "scaleway_sdb_sql_database" "main" {
 
   project_id = var.project_id
   region     = var.region
+  version    = var.postgresql_version
+}
+
+# A warning only: the API rejects the creation of a database with an unavailable
+# version, and an existing database must keep its plans working once its version
+# is no longer offered.
+check "postgresql_version_available" {
+  data "scaleway_sdb_sql_versions" "available" {
+    region = var.region
+  }
+
+  assert {
+    condition     = var.postgresql_version == null || contains(data.scaleway_sdb_sql_versions.available.versions[*].name, var.postgresql_version)
+    error_message = format("PostgreSQL %s isn't offered by Scaleway Serverless SQL Databases in region %s: a new database can't be created with it. Versions offered: %s.", coalesce(var.postgresql_version, "null"), coalesce(data.scaleway_sdb_sql_versions.available.region, "unknown"), join(", ", data.scaleway_sdb_sql_versions.available.versions[*].name))
+  }
 }
 
 # The keys are rotated `keys_rotation_window` days before they expire, so that

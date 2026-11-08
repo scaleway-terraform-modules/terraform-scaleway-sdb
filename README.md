@@ -38,13 +38,21 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 - Apply the module at least once during the rotation window (e.g. with a scheduled pipeline), or the keys expire and the connection strings stop working.
 - The new keys are created before the old ones are deleted, but both happen in the same apply: update the consumers of the connection strings in that apply too.
 
+### Upgrading PostgreSQL
+
+Serverless SQL Databases can't be upgraded in place to another PostgreSQL major version: changing `postgresql_version` creates a new, empty database and deletes the old one, **with its data**. The same happens when changing `project_id` or `region`.
+
+The module warns during `plan` when `postgresql_version` isn't offered in the database's region.
+
+To upgrade, create a second instance of the module with the new version, copy the data (e.g. with `pg_dump` and `pg_restore`), switch the consumers to its connection strings, then remove the old instance.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.11 |
-| <a name="requirement_scaleway"></a> [scaleway](#requirement_scaleway) | >= 2.79.0 |
+| <a name="requirement_scaleway"></a> [scaleway](#requirement_scaleway) | >= 2.88.0 |
 | <a name="requirement_time"></a> [time](#requirement_time) | >= 0.7.1 |
 
 ## Resources
@@ -73,6 +81,7 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
 | <a name="input_min_cpu"></a> [min_cpu](#input_min_cpu) | Minimum number of CPU units for your database. | `number` | `0` | no |
+| <a name="input_postgresql_version"></a> [postgresql_version](#input_postgresql_version) | PostgreSQL major version of the database, e.g. `16`. The API's default version is used when null. Changing it recreates the database, and its data is lost: see the README to upgrade. | `string` | `null` | no |
 | <a name="input_project_id"></a> [project_id](#input_project_id) | ID of the project the database is associated with. Resource will be created in the project set at the provider level if null. Changing it recreates the database, and its data is lost. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input_region) | Region in which the database should be created, e.g. `fr-par`. Resource will be created in the region set at the provider level if null. Changing it recreates the database, and its data is lost. | `string` | `null` | no |
 
