@@ -1,12 +1,16 @@
 resource "scaleway_iam_application" "ro" {
+  count = contains(var.access_levels, "ro") ? 1 : 0
+
   name        = format("SDB - %s - RO", var.name)
   description = format("Read access to the Serverless SQL Databases in the project of %s", var.name)
 }
 
 resource "scaleway_iam_policy" "ro" {
+  count = contains(var.access_levels, "ro") ? 1 : 0
+
   name           = format("SDB - %s - RO", var.name)
   description    = format("Read access to the Serverless SQL Databases in the project of %s", var.name)
-  application_id = scaleway_iam_application.ro.id
+  application_id = scaleway_iam_application.ro[0].id
 
   rule {
     project_ids          = [scaleway_sdb_sql_database.main.project_id]
@@ -15,7 +19,9 @@ resource "scaleway_iam_policy" "ro" {
 }
 
 resource "scaleway_iam_api_key" "ro" {
-  application_id     = scaleway_iam_application.ro.id
+  count = contains(var.access_levels, "ro") ? 1 : 0
+
+  application_id     = scaleway_iam_application.ro[0].id
   default_project_id = scaleway_sdb_sql_database.main.project_id
   expires_at         = local.keys_expires_at
 

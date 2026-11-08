@@ -20,7 +20,7 @@ module "sdb" {
 
 ### Access levels
 
-The module creates one IAM application, policy and API key per access level, and returns a connection string for each:
+The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns a connection string for each. The connection string of a level that isn't listed is `null`:
 
 | Access level | Output | Permission set | PostgreSQL role | Allowed |
 |---|---|---|---|---|
@@ -68,6 +68,7 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
+| <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy, API key and connection string for, among `admin`, `rw` and `ro`. Removing a level deletes its API key. | `set(string)` | ```[ "admin", "rw", "ro" ]``` | no |
 | <a name="input_keys_rotation_window"></a> [keys_rotation_window](#input_keys_rotation_window) | Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0. | `number` | `7` | no |
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
@@ -79,10 +80,10 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 
 | Name | Description |
 |------|-------------|
-| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string with read and write access to data and schema. |
+| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string with read and write access to data and schema. Null if `admin` is not in `access_levels`. |
 | <a name="output_endpoint"></a> [endpoint](#output_endpoint) | Endpoint of the database. |
-| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string with read access to data. |
-| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string with read and write access to data, without schema changes. |
+| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string with read access to data. Null if `ro` is not in `access_levels`. |
+| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string with read and write access to data, without schema changes. Null if `rw` is not in `access_levels`. |
 <!-- END_TF_DOCS -->
 
 ## Authors
