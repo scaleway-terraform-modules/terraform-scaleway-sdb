@@ -49,3 +49,15 @@ variable "project_id" {
   type        = string
   default     = null
 }
+
+variable "access_levels" {
+  description = "Access levels to create an IAM application, policy, API key and connection string for, among `admin`, `rw` and `ro`. Removing a level deletes its API key."
+  type        = set(string)
+  default     = ["admin", "rw", "ro"]
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for level in var.access_levels : contains(["admin", "rw", "ro"], level)])
+    error_message = "'access_levels' must only contain 'admin', 'rw' and 'ro'."
+  }
+}
