@@ -4,9 +4,9 @@ variable "name" {
 }
 
 variable "keys_ttl" {
-  description = "TTL of IAM keys in days."
+  description = "Number of days after which the IAM keys expire. Set to 0 for keys that never expire."
   type        = number
-  default     = 0
+  default     = 90
 }
 
 variable "min_cpu" {
