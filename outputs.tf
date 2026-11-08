@@ -4,7 +4,7 @@ output "endpoint" {
 }
 
 output "admin_connection_string" {
-  description = "Connection string to connect with admin permissions."
+  description = "Connection string with read and write access to data and schema."
   value = format("postgres://%s:%s@%s",
     scaleway_iam_application.admin.id,
     scaleway_iam_api_key.admin.secret_key,
@@ -14,7 +14,7 @@ output "admin_connection_string" {
 }
 
 output "ro_connection_string" {
-  description = "Connection string to connect with read only permissions."
+  description = "Connection string with read access to data."
   value = format("postgres://%s:%s@%s",
     scaleway_iam_application.ro.id,
     scaleway_iam_api_key.ro.secret_key,
@@ -24,7 +24,7 @@ output "ro_connection_string" {
 }
 
 output "rw_connection_string" {
-  description = "Connection string to connect with read/write permissions."
+  description = "Connection string with read and write access to data, without schema changes."
   value = format("postgres://%s:%s@%s",
     scaleway_iam_application.rw.id,
     scaleway_iam_api_key.rw.secret_key,

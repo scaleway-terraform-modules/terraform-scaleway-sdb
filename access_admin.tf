@@ -1,16 +1,16 @@
 resource "scaleway_iam_application" "admin" {
   name        = format("SDB - %s - Admin", var.name)
-  description = format("Full access to Serverless SQL Database %s", var.name)
+  description = format("Read and write access to data and schema of the Serverless SQL Databases in the project of %s", var.name)
 }
 
 resource "scaleway_iam_policy" "admin" {
   name           = format("SDB - %s - Admin", var.name)
-  description    = format("Full access to Serverless SQL Database %s", var.name)
+  description    = format("Read and write access to data and schema of the Serverless SQL Databases in the project of %s", var.name)
   application_id = scaleway_iam_application.admin.id
 
   rule {
     project_ids          = [scaleway_sdb_sql_database.main.project_id]
-    permission_set_names = ["ServerlessSQLDatabaseFullAccess"]
+    permission_set_names = ["ServerlessSQLDatabaseReadWrite"]
   }
 }
 

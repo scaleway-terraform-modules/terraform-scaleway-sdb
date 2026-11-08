@@ -18,6 +18,19 @@ module "sdb" {
 }
 ```
 
+### Access levels
+
+The module creates one IAM application, policy and API key per access level, and returns a connection string for each:
+
+| Access level | Output | Permission set | PostgreSQL role | Allowed |
+|---|---|---|---|---|
+| `admin` | `admin_connection_string` | `ServerlessSQLDatabaseReadWrite` | `role_admin` | Read and write data, change the schema (`CREATE`, `ALTER`, `DROP`) |
+| `rw` | `rw_connection_string` | `ServerlessSQLDatabaseDataReadWrite` | `role_readwrite` | Read and write data (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`) |
+| `ro` | `ro_connection_string` | `ServerlessSQLDatabaseReadOnly` | `role_readonly` | Read data (`SELECT`) |
+
+> [!IMPORTANT]
+> Scaleway IAM policies can't target a single Serverless SQL Database: each access level applies to **every Serverless SQL Database of the project**. Use a dedicated project (`project_id`) for a database that must be isolated.
+
 ### Key rotation
 
 With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after their creation. Terraform replaces them `keys_rotation_window` days (7 by default) before they expire, but only when it runs:
@@ -66,10 +79,10 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 
 | Name | Description |
 |------|-------------|
-| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string to connect with admin permissions. |
+| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string with read and write access to data and schema. |
 | <a name="output_endpoint"></a> [endpoint](#output_endpoint) | Endpoint of the database. |
-| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string to connect with read only permissions. |
-| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string to connect with read/write permissions. |
+| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string with read access to data. |
+| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string with read and write access to data, without schema changes. |
 <!-- END_TF_DOCS -->
 
 ## Authors
