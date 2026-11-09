@@ -9,9 +9,16 @@ locals {
   access = {
     for level, resources in local.access_resources : level => {
       application_id = resources.application[0].id
+      access_key     = resources.key[0].access_key
       secret_key     = resources.key[0].secret_key
     } if length(resources.key) > 0
   }
+}
+
+output "access" {
+  description = "Credentials of each access level listed in `access_levels`: IAM application ID (the user name in the connection strings), API access key, and API secret key (the password in the connection strings)."
+  value       = local.access
+  sensitive   = true
 }
 
 output "connection_strings" {
