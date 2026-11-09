@@ -46,6 +46,8 @@ The module only adds versions to the secrets it doesn't create. Two instances of
 
 To connect, consumers read the secret key from the secret given by `access[level].secret_id`, and use `access[level].application_id` as user name, on `database_endpoint`.
 
+Each key rotation adds a version to the secret, and a secret holds 20 versions at most. With `keys_ttl` greater than 0, the secrets created by the module delete each version `keys_ttl` days after its creation, when its API key expires; `keys_ttl` must then be at most 365. The module doesn't manage the secrets given by `secret_id`: give them an ephemeral policy deleting versions after `keys_ttl` days, or delete old versions yourself.
+
 ### Key rotation
 
 With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after their creation. Terraform replaces them `keys_rotation_window` days (7 by default) before they expire, but only when it runs:
@@ -92,7 +94,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
-| <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key. | ```map(object({ secret_id = optional(string) }))``` | ```{ "admin": {}, "ro": {}, "rw": {} }``` | no |
+| <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key. | ```map(object({ secret_id = optional(string) }))``` | ```{ "admin": {}, "ro": {}, "rw": {} }``` | no |
 | <a name="input_key_secrets_path"></a> [key_secrets_path](#input_key_secrets_path) | Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null. | `string` | `null` | no |
 | <a name="input_keys_rotation_window"></a> [keys_rotation_window](#input_keys_rotation_window) | Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0. | `number` | `7` | no |
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
