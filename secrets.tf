@@ -19,4 +19,21 @@ resource "scaleway_secret" "keys" {
   type        = "opaque"
   region      = scaleway_sdb_sql_database.main.region
   project_id  = scaleway_sdb_sql_database.main.project_id
+
+  # Delete each version when the API key whose secret key it holds expires, so
+  # that rotations don't pile up versions (a secret holds 20 at most).
+  dynamic "ephemeral_policy" {
+    for_each = var.keys_ttl > 0 ? [1] : []
+    content {
+      action = "delete"
+      ttl    = "${var.keys_ttl * 24}h"
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.keys_ttl <= 365
+      error_message = "'keys_ttl' must be at most 365 when the module creates secrets: their versions are deleted after 'keys_ttl' days, and Secret Manager accepts 1 year at most."
+    }
+  }
 }
