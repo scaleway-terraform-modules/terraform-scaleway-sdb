@@ -20,7 +20,7 @@ module "sdb" {
 
 ### Access levels
 
-The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns its credentials in the `access` and `connection_strings` outputs, keyed by level:
+The module creates one IAM application, policy and API key per access level in `access_levels` (all three by default), and returns its credentials in the `access` output, keyed by level:
 
 | Access level | Permission set | PostgreSQL role | Allowed |
 |---|---|---|---|
@@ -31,12 +31,27 @@ The module creates one IAM application, policy and API key per access level list
 > [!IMPORTANT]
 > Scaleway IAM policies can't target a single Serverless SQL Database: each access level applies to **every Serverless SQL Database of the project**. Use a dedicated project (`project_id`) for a database that must be isolated.
 
+### Secret keys
+
+The secret key of each API key is written as a new version of a Secret Manager secret, and isn't stored in the Terraform state. For each access level, the secret is the one given by its `secret_id`, or else an opaque secret created by the module, named after the level (`admin`, `rw`, `ro`), under `key_secrets_path` (`/sdb/<name>` by default), in the database's region and project:
+
+```hcl
+access_levels = {
+  admin = {}                                                           # secret created by the module
+  rw    = { secret_id = "fr-par/11111111-2222-4333-8444-555555555555" } # existing secret
+}
+```
+
+The module only adds versions to the secrets it doesn't create. Two instances of the module with the same `name` in the same project and region need different `key_secrets_path`.
+
+To connect, consumers read the secret key from the secret given by `access[level].secret_id`, and use `access[level].application_id` as user name, on `database_endpoint`.
+
 ### Key rotation
 
 With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after their creation. Terraform replaces them `keys_rotation_window` days (7 by default) before they expire, but only when it runs:
 
-- Apply the module at least once during the rotation window (e.g. with a scheduled pipeline), or the keys expire and the connection strings stop working.
-- The new keys are created before the old ones are deleted, but both happen in the same apply: update the consumers of the connection strings in that apply too.
+- Apply the module at least once during the rotation window (e.g. with a scheduled pipeline), or the keys expire and connections are refused.
+- The new keys are created before the old ones are deleted, but both happen in the same apply: the new secret key is written as a new version of the secret, and consumers must read it before connecting again.
 
 ### Upgrading PostgreSQL
 
@@ -44,7 +59,7 @@ Serverless SQL Databases can't be upgraded in place to another PostgreSQL major 
 
 The module warns during `plan` when `postgresql_version` isn't offered in the database's region.
 
-To upgrade, create a second instance of the module with the new version, copy the data (e.g. with `pg_dump` and `pg_restore`), switch the consumers to its connection strings, then remove the old instance.
+To upgrade, create a second instance of the module with the new version, copy the data (e.g. with `pg_dump` and `pg_restore`), switch the consumers to its credentials, then remove the old instance.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -69,6 +84,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 | [scaleway_iam_policy.ro](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_iam_policy.rw](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/iam_policy) | resource |
 | [scaleway_sdb_sql_database.main](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/sdb_sql_database) | resource |
+| [scaleway_secret.keys](https://registry.terraform.io/providers/scaleway/scaleway/latest/docs/resources/secret) | resource |
 | [time_rotating.keys_ttl](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/rotating) | resource |
 
 ## Inputs
@@ -76,7 +92,8 @@ To upgrade, create a second instance of the module with the new version, copy th
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
-| <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy, API key and connection string for, among `admin`, `rw` and `ro`. Removing a level deletes its API key. | `set(string)` | ```[ "admin", "rw", "ro" ]``` | no |
+| <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key. | ```map(object({ secret_id = optional(string) }))``` | ```{ "admin": {}, "ro": {}, "rw": {} }``` | no |
+| <a name="input_key_secrets_path"></a> [key_secrets_path](#input_key_secrets_path) | Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null. | `string` | `null` | no |
 | <a name="input_keys_rotation_window"></a> [keys_rotation_window](#input_keys_rotation_window) | Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0. | `number` | `7` | no |
 | <a name="input_keys_ttl"></a> [keys_ttl](#input_keys_ttl) | TTL of IAM keys in days. | `number` | `0` | no |
 | <a name="input_max_cpu"></a> [max_cpu](#input_max_cpu) | Maximum number of CPU units for your database. | `number` | `15` | no |
@@ -89,8 +106,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 
 | Name | Description |
 |------|-------------|
-| <a name="output_access"></a> [access](#output_access) | Credentials of each access level listed in `access_levels`: IAM application ID (the user name in the connection strings), API access key, and API secret key (the password in the connection strings). |
-| <a name="output_connection_strings"></a> [connection_strings](#output_connection_strings) | Connection string of each access level listed in `access_levels`. |
+| <a name="output_access"></a> [access](#output_access) | Credentials of each access level listed in `access_levels`: IAM application ID (the user name to connect to the database), API access key, and ID of the Secret Manager secret holding the API secret key (the password to connect to the database). |
 | <a name="output_database_endpoint"></a> [database_endpoint](#output_database_endpoint) | Endpoint of the database. |
 | <a name="output_database_id"></a> [database_id](#output_database_id) | ID of the database, in the `{region}/{id}` format. |
 | <a name="output_database_name"></a> [database_name](#output_database_name) | Name of the database. |
