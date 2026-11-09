@@ -11,7 +11,7 @@ variable "keys_ttl" {
 
   validation {
     condition     = var.keys_ttl >= 0 && var.keys_ttl == floor(var.keys_ttl)
-    error_message = "'keys_ttl' must be a non-negative whole number of days."
+    error_message = "'keys_ttl' must be an integer greater than or equal to 0."
   }
 }
 
@@ -22,8 +22,8 @@ variable "min_cpu" {
   nullable    = false
 
   validation {
-    condition     = var.min_cpu >= 0 && var.min_cpu <= 15
-    error_message = "'min_cpu' must be between 0 and 15."
+    condition     = var.min_cpu >= 0 && var.min_cpu <= 15 && var.min_cpu == floor(var.min_cpu)
+    error_message = "'min_cpu' must be an integer between 0 and 15."
   }
 }
 
@@ -34,8 +34,8 @@ variable "max_cpu" {
   nullable    = false
 
   validation {
-    condition     = var.max_cpu >= 0 && var.max_cpu <= 15
-    error_message = "'max_cpu' must be between 0 and 15."
+    condition     = var.max_cpu >= 0 && var.max_cpu <= 15 && var.max_cpu == floor(var.max_cpu)
+    error_message = "'max_cpu' must be an integer between 0 and 15."
   }
 
   validation {
