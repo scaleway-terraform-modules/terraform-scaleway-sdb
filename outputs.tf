@@ -1,8 +1,3 @@
-output "endpoint" {
-  description = "Endpoint of the database."
-  value       = scaleway_sdb_sql_database.main.endpoint
-}
-
 output "admin_connection_string" {
   description = "Connection string with read and write access to data and schema. Null if `admin` is not in `access_levels`."
   value = contains(var.access_levels, "admin") ? format("postgres://%s:%s@%s",
@@ -31,6 +26,11 @@ output "rw_connection_string" {
     trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
   ) : null
   sensitive = true
+}
+
+output "database_endpoint" {
+  description = "Endpoint of the database."
+  value       = scaleway_sdb_sql_database.main.endpoint
 }
 
 output "database_id" {
