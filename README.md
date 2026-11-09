@@ -20,13 +20,13 @@ module "sdb" {
 
 ### Access levels
 
-The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns a connection string for each. The connection string of a level that isn't listed is `null`:
+The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns its connection string in the `connection_strings` output, keyed by level:
 
-| Access level | Output | Permission set | PostgreSQL role | Allowed |
-|---|---|---|---|---|
-| `admin` | `admin_connection_string` | `ServerlessSQLDatabaseReadWrite` | `role_admin` | Read and write data, change the schema (`CREATE`, `ALTER`, `DROP`) |
-| `rw` | `rw_connection_string` | `ServerlessSQLDatabaseDataReadWrite` | `role_readwrite` | Read and write data (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`) |
-| `ro` | `ro_connection_string` | `ServerlessSQLDatabaseReadOnly` | `role_readonly` | Read data (`SELECT`) |
+| Access level | Permission set | PostgreSQL role | Allowed |
+|---|---|---|---|
+| `admin` | `ServerlessSQLDatabaseReadWrite` | `role_admin` | Read and write data, change the schema (`CREATE`, `ALTER`, `DROP`) |
+| `rw` | `ServerlessSQLDatabaseDataReadWrite` | `role_readwrite` | Read and write data (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`) |
+| `ro` | `ServerlessSQLDatabaseReadOnly` | `role_readonly` | Read data (`SELECT`) |
 
 > [!IMPORTANT]
 > Scaleway IAM policies can't target a single Serverless SQL Database: each access level applies to **every Serverless SQL Database of the project**. Use a dedicated project (`project_id`) for a database that must be isolated.
@@ -89,7 +89,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 
 | Name | Description |
 |------|-------------|
-| <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string with read and write access to data and schema. Null if `admin` is not in `access_levels`. |
+| <a name="output_connection_strings"></a> [connection_strings](#output_connection_strings) | Connection string of each access level listed in `access_levels`. |
 | <a name="output_database_endpoint"></a> [database_endpoint](#output_database_endpoint) | Endpoint of the database. |
 | <a name="output_database_id"></a> [database_id](#output_database_id) | ID of the database, in the `{region}/{id}` format. |
 | <a name="output_database_name"></a> [database_name](#output_database_name) | Name of the database. |
@@ -98,8 +98,6 @@ To upgrade, create a second instance of the module with the new version, copy th
 | <a name="output_database_srn"></a> [database_srn](#output_database_srn) | Scaleway Resource Name (SRN) of the database. |
 | <a name="output_database_version"></a> [database_version](#output_database_version) | PostgreSQL major version of the database. |
 | <a name="output_database_version_end_of_life_at"></a> [database_version_end_of_life_at](#output_database_version_end_of_life_at) | End of life date of the PostgreSQL version of the database (RFC 3339 format). |
-| <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string with read access to data. Null if `ro` is not in `access_levels`. |
-| <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string with read and write access to data, without schema changes. Null if `rw` is not in `access_levels`. |
 <!-- END_TF_DOCS -->
 
 ## Authors

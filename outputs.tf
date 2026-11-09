@@ -1,30 +1,28 @@
-output "admin_connection_string" {
-  description = "Connection string with read and write access to data and schema. Null if `admin` is not in `access_levels`."
-  value = contains(var.access_levels, "admin") ? format("postgres://%s:%s@%s",
-    scaleway_iam_application.admin[0].id,
-    scaleway_iam_api_key.admin[0].secret_key,
-    trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
-  ) : null
-  sensitive = true
+locals {
+  access_resources = {
+    admin = { application = scaleway_iam_application.admin, key = scaleway_iam_api_key.admin }
+    rw    = { application = scaleway_iam_application.rw, key = scaleway_iam_api_key.rw }
+    ro    = { application = scaleway_iam_application.ro, key = scaleway_iam_api_key.ro }
+  }
+
+  # Credentials of the access levels listed in `access_levels`.
+  access = {
+    for level, resources in local.access_resources : level => {
+      application_id = resources.application[0].id
+      secret_key     = resources.key[0].secret_key
+    } if length(resources.key) > 0
+  }
 }
 
-output "ro_connection_string" {
-  description = "Connection string with read access to data. Null if `ro` is not in `access_levels`."
-  value = contains(var.access_levels, "ro") ? format("postgres://%s:%s@%s",
-    scaleway_iam_application.ro[0].id,
-    scaleway_iam_api_key.ro[0].secret_key,
-    trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
-  ) : null
-  sensitive = true
-}
-
-output "rw_connection_string" {
-  description = "Connection string with read and write access to data, without schema changes. Null if `rw` is not in `access_levels`."
-  value = contains(var.access_levels, "rw") ? format("postgres://%s:%s@%s",
-    scaleway_iam_application.rw[0].id,
-    scaleway_iam_api_key.rw[0].secret_key,
-    trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
-  ) : null
+output "connection_strings" {
+  description = "Connection string of each access level listed in `access_levels`."
+  value = {
+    for level, access in local.access : level => format("postgres://%s:%s@%s",
+      access.application_id,
+      access.secret_key,
+      trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
+    )
+  }
   sensitive = true
 }
 
