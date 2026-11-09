@@ -51,7 +51,7 @@ variable "project_id" {
 }
 
 variable "access_levels" {
-  description = "Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key."
+  description = "Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. `secret_id` must be known at plan time: it can't come from a resource created in the same apply. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key."
   type = map(object({
     secret_id = optional(string)
   }))
