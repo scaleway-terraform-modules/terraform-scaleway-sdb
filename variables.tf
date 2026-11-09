@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of the database."
+  description = "Name of the database. Changing it recreates the database, and its data is lost."
   type        = string
 }
 
