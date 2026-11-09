@@ -51,14 +51,21 @@ variable "project_id" {
 }
 
 variable "access_levels" {
-  description = "Access levels to create an IAM application, policy, API key and connection string for, among `admin`, `rw` and `ro`. Removing a level deletes its API key."
-  type        = set(string)
-  default     = ["admin", "rw", "ro"]
-  nullable    = false
+  description = "Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key."
+  type = map(object({
+    secret_id = optional(string)
+  }))
+  default  = { admin = {}, rw = {}, ro = {} }
+  nullable = false
 
   validation {
-    condition     = alltrue([for level in var.access_levels : contains(["admin", "rw", "ro"], level)])
-    error_message = "'access_levels' must only contain 'admin', 'rw' and 'ro'."
+    condition     = alltrue([for level in keys(var.access_levels) : contains(["admin", "rw", "ro"], level)])
+    error_message = "The keys of 'access_levels' must be among 'admin', 'rw' and 'ro'."
+  }
+
+  validation {
+    condition     = alltrue([for level in values(var.access_levels) : level.secret_id == null || can(regex("^([a-z]{2}-[a-z]{3}/)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", level.secret_id))])
+    error_message = "Each 'secret_id' of 'access_levels' must be a secret ID, as a UUID or a regional ID ('{region}/{id}')."
   }
 }
 
@@ -66,4 +73,15 @@ variable "postgresql_version" {
   description = "PostgreSQL major version of the database, e.g. `16`. The API's default version is used when null. Changing it recreates the database, and its data is lost: see the README to upgrade."
   type        = string
   default     = null
+}
+
+variable "key_secrets_path" {
+  description = "Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.key_secrets_path == null || startswith(coalesce(var.key_secrets_path, "/"), "/")
+    error_message = "'key_secrets_path' must start with '/'."
+  }
 }

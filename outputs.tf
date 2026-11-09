@@ -10,27 +10,14 @@ locals {
     for level, resources in local.access_resources : level => {
       application_id = resources.application[0].id
       access_key     = resources.key[0].access_key
-      secret_key     = resources.key[0].secret_key
+      secret_id      = resources.key[0].secret_id
     } if length(resources.key) > 0
   }
 }
 
 output "access" {
-  description = "Credentials of each access level listed in `access_levels`: IAM application ID (the user name in the connection strings), API access key, and API secret key (the password in the connection strings)."
+  description = "Credentials of each access level listed in `access_levels`: IAM application ID (the user name to connect to the database), API access key, and ID of the Secret Manager secret holding the API secret key (the password to connect to the database)."
   value       = local.access
-  sensitive   = true
-}
-
-output "connection_strings" {
-  description = "Connection string of each access level listed in `access_levels`."
-  value = {
-    for level, access in local.access : level => format("postgres://%s:%s@%s",
-      access.application_id,
-      access.secret_key,
-      trimprefix(scaleway_sdb_sql_database.main.endpoint, "postgres://"),
-    )
-  }
-  sensitive = true
 }
 
 output "database_endpoint" {
