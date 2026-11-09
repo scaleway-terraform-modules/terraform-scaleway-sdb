@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository is used to manage Serverless Databases on scaleway using terraform.
+This repository is used to manage Serverless SQL Databases on Scaleway using Terraform, with IAM credentials to connect to them.
 
 ## Usage
 
@@ -12,11 +12,15 @@ This repository is used to manage Serverless Databases on scaleway using terrafo
 ```hcl
 module "sdb" {
   source  = "scaleway-terraform-modules/sdb/scaleway"
-  version = "~> 0.0"
+  version = "~> 1.0"
 
-  # insert required variables here
+  name = "my-database"
 }
 ```
+
+Consumers connect to `module.sdb.database_endpoint`, with `module.sdb.access["rw"].application_id` as user name, and the latest version of the secret given by `module.sdb.access["rw"].secret_id` as password (see [Access levels](#access-levels) and [Secret keys](#secret-keys)).
+
+See the [examples](examples) folder for runnable configurations covering the most common use-cases (read-only access, key rotation, existing secret, Serverless Container).
 
 ### Access levels
 
@@ -58,13 +62,18 @@ With `keys_ttl` greater than 0, the IAM API keys expire `keys_ttl` days after th
 - Apply the module at least once during the rotation window (e.g. with a scheduled pipeline), or the keys expire and connections are refused.
 - The new keys are created before the old ones are deleted, but both happen in the same apply: the new secret key is written as a new version of the secret, and consumers must read it before connecting again.
 
-### Upgrading PostgreSQL
+### CPU autoscaling
 
-Serverless SQL Databases can't be upgraded in place to another PostgreSQL major version: changing `postgresql_version` creates a new, empty database and deletes the old one, **with its data**. The same happens when changing `project_id` or `region`.
+The database scales its compute between `min_cpu` and `max_cpu` vCPUs (0 to 15), with 4 GB of RAM per vCPU. With `min_cpu = 0` (the default), it scales to zero when idle: no compute is billed then, but the first connection after an idle period waits for the database to start. A higher `min_cpu` avoids that delay, at the cost of always billing that compute.
+
+### Changes that recreate the database
+
+> [!WARNING]
+> Changing `name`, `postgresql_version`, `project_id` or `region` creates a new, empty database and deletes the old one, **with its data**: the Scaleway API can't change them in place. `terraform plan` shows the database as `must be replaced`: check the plan before applying.
+
+To change one of them, e.g. to upgrade PostgreSQL, create a second instance of the module with the new value, copy the data (e.g. with `pg_dump` and `pg_restore`), switch the consumers to its credentials, then remove the old instance.
 
 The module warns during `plan` when `postgresql_version` isn't offered in the database's region.
-
-To upgrade, create a second instance of the module with the new version, copy the data (e.g. with `pg_dump` and `pg_restore`), switch the consumers to its credentials, then remove the old instance.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -96,7 +105,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_name"></a> [name](#input_name) | Name of the database. | `string` | n/a | yes |
+| <a name="input_name"></a> [name](#input_name) | Name of the database. Changing it recreates the database, and its data is lost. | `string` | n/a | yes |
 | <a name="input_access_levels"></a> [access_levels](#input_access_levels) | Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. `secret_id` must be known at plan time: it can't come from a resource created in the same apply. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key. | ```map(object({ secret_id = optional(string) }))``` | ```{ "admin": {}, "ro": {}, "rw": {} }``` | no |
 | <a name="input_key_secrets_path"></a> [key_secrets_path](#input_key_secrets_path) | Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null. | `string` | `null` | no |
 | <a name="input_keys_rotation_window"></a> [keys_rotation_window](#input_keys_rotation_window) | Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0. | `number` | `7` | no |
@@ -128,4 +137,4 @@ Module is maintained with help from [the community](https://github.com/scaleway-
 
 ## License
 
-Mozilla Public License 2.0 Licensed. See [LICENSE](https://github.com/scaleway-terraform-modules/terraform-scaleway-sdb/tree/master/LICENSE) for full details.
+Mozilla Public License 2.0 Licensed. See [LICENSE](https://github.com/scaleway-terraform-modules/terraform-scaleway-sdb/tree/main/LICENSE) for full details.
