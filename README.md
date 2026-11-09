@@ -90,6 +90,13 @@ To upgrade, create a second instance of the module with the new version, copy th
 | Name | Description |
 |------|-------------|
 | <a name="output_admin_connection_string"></a> [admin_connection_string](#output_admin_connection_string) | Connection string with read and write access to data and schema. Null if `admin` is not in `access_levels`. |
+| <a name="output_database_id"></a> [database_id](#output_database_id) | ID of the database, in the `{region}/{id}` format. |
+| <a name="output_database_name"></a> [database_name](#output_database_name) | Name of the database. |
+| <a name="output_database_project_id"></a> [database_project_id](#output_database_project_id) | ID of the project the database is associated with. |
+| <a name="output_database_region"></a> [database_region](#output_database_region) | Region of the database. |
+| <a name="output_database_srn"></a> [database_srn](#output_database_srn) | Scaleway Resource Name (SRN) of the database. |
+| <a name="output_database_version"></a> [database_version](#output_database_version) | PostgreSQL major version of the database. |
+| <a name="output_database_version_end_of_life_at"></a> [database_version_end_of_life_at](#output_database_version_end_of_life_at) | End of life date of the PostgreSQL version of the database (RFC 3339 format). |
 | <a name="output_endpoint"></a> [endpoint](#output_endpoint) | Endpoint of the database. |
 | <a name="output_ro_connection_string"></a> [ro_connection_string](#output_ro_connection_string) | Connection string with read access to data. Null if `ro` is not in `access_levels`. |
 | <a name="output_rw_connection_string"></a> [rw_connection_string](#output_rw_connection_string) | Connection string with read and write access to data, without schema changes. Null if `rw` is not in `access_levels`. |
