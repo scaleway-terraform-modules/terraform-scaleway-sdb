@@ -20,7 +20,7 @@ module "sdb" {
 
 ### Access levels
 
-The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns its connection string in the `connection_strings` output, keyed by level:
+The module creates one IAM application, policy and API key per access level listed in `access_levels` (all three by default), and returns its credentials in the `access` and `connection_strings` outputs, keyed by level:
 
 | Access level | Permission set | PostgreSQL role | Allowed |
 |---|---|---|---|
@@ -89,6 +89,7 @@ To upgrade, create a second instance of the module with the new version, copy th
 
 | Name | Description |
 |------|-------------|
+| <a name="output_access"></a> [access](#output_access) | Credentials of each access level listed in `access_levels`: IAM application ID (the user name in the connection strings), API access key, and API secret key (the password in the connection strings). |
 | <a name="output_connection_strings"></a> [connection_strings](#output_connection_strings) | Connection string of each access level listed in `access_levels`. |
 | <a name="output_database_endpoint"></a> [database_endpoint](#output_database_endpoint) | Endpoint of the database. |
 | <a name="output_database_id"></a> [database_id](#output_database_id) | ID of the database, in the `{region}/{id}` format. |
