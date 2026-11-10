@@ -7,18 +7,41 @@ variable "keys_ttl" {
   description = "TTL of IAM keys in days."
   type        = number
   default     = 0
+  nullable    = false
+
+  validation {
+    condition     = var.keys_ttl >= 0 && var.keys_ttl == floor(var.keys_ttl)
+    error_message = "'keys_ttl' must be an integer greater than or equal to 0."
+  }
 }
 
 variable "min_cpu" {
   description = "Minimum number of CPU units for your database."
   type        = number
   default     = 0
+  nullable    = false
+
+  validation {
+    condition     = var.min_cpu >= 0 && var.min_cpu <= 15 && var.min_cpu == floor(var.min_cpu)
+    error_message = "'min_cpu' must be an integer between 0 and 15."
+  }
 }
 
 variable "max_cpu" {
   description = "Maximum number of CPU units for your database."
   type        = number
   default     = 15
+  nullable    = false
+
+  validation {
+    condition     = var.max_cpu >= 0 && var.max_cpu <= 15 && var.max_cpu == floor(var.max_cpu)
+    error_message = "'max_cpu' must be an integer between 0 and 15."
+  }
+
+  validation {
+    condition     = var.max_cpu >= var.min_cpu
+    error_message = "'max_cpu' must be greater than or equal to 'min_cpu'."
+  }
 }
 
 variable "region" {
