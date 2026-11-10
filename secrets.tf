@@ -17,8 +17,8 @@ resource "scaleway_secret" "keys" {
   path        = coalesce(var.key_secrets_path, "/sdb/${var.name}")
   description = format("Secret key of the %s access level of Serverless SQL Database %s", each.key, var.name)
   type        = "opaque"
-  region      = scaleway_sdb_sql_database.main.region
-  project_id  = scaleway_sdb_sql_database.main.project_id
+  region      = scaleway_sdb_sql_database.this.region
+  project_id  = scaleway_sdb_sql_database.this.project_id
 
   # Delete each version when the API key whose secret key it holds expires, so
   # that rotations don't pile up versions (a secret holds 20 at most).

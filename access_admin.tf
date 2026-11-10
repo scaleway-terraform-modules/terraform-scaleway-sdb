@@ -13,7 +13,7 @@ resource "scaleway_iam_policy" "admin" {
   application_id = scaleway_iam_application.admin[0].id
 
   rule {
-    project_ids          = [scaleway_sdb_sql_database.main.project_id]
+    project_ids          = [scaleway_sdb_sql_database.this.project_id]
     permission_set_names = ["ServerlessSQLDatabaseReadWrite"]
   }
 }
@@ -22,7 +22,7 @@ resource "scaleway_iam_api_key" "admin" {
   count = contains(keys(var.access_levels), "admin") ? 1 : 0
 
   application_id     = scaleway_iam_application.admin[0].id
-  default_project_id = scaleway_sdb_sql_database.main.project_id
+  default_project_id = scaleway_sdb_sql_database.this.project_id
   expires_at         = local.keys_expires_at
   secret_id          = local.key_secret_ids["admin"]
 

@@ -1,4 +1,9 @@
-resource "scaleway_sdb_sql_database" "main" {
+moved {
+  from = scaleway_sdb_sql_database.main
+  to   = scaleway_sdb_sql_database.this
+}
+
+resource "scaleway_sdb_sql_database" "this" {
   name = var.name
 
   min_cpu = var.min_cpu
