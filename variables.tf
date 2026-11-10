@@ -1,10 +1,10 @@
 variable "access_levels" {
-  description = "Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. `secret_id` must be known at plan time: it can't come from a resource created in the same apply. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key."
   type = map(object({
     secret_id = optional(string)
   }))
-  default  = { admin = {}, rw = {}, ro = {} }
-  nullable = false
+  description = "Access levels to create an IAM application, policy and API key for, among `admin`, `rw` and `ro`. The secret key of each API key is stored in the Secret Manager secret given by `secret_id` (UUID or `{region}/{id}`; the module only adds versions to it), or in a secret created by the module when `secret_id` is null. `secret_id` must be known at plan time: it can't come from a resource created in the same apply. Each key rotation adds a version to the secret, and a secret holds 20 versions at most: the module deletes old versions of the secrets it creates, but not of the ones given by `secret_id`. Removing a level deletes its API key, and the secret created for it. Changing `secret_id` recreates the API key."
+  default     = { admin = {}, rw = {}, ro = {} }
+  nullable    = false
 
   validation {
     condition     = alltrue([for level in keys(var.access_levels) : contains(["admin", "rw", "ro"], level)])
@@ -18,8 +18,8 @@ variable "access_levels" {
 }
 
 variable "key_secrets_path" {
-  description = "Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null."
   type        = string
+  description = "Path of the Secret Manager secrets created for the secret keys. Defaults to `/sdb/<name>` when null."
   default     = null
 
   validation {
@@ -29,8 +29,8 @@ variable "key_secrets_path" {
 }
 
 variable "keys_rotation_window" {
-  description = "Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0."
   type        = number
+  description = "Number of days before the expiry of the IAM keys during which Terraform replaces them. Rotation only happens when Terraform runs: apply the module at least once during this window, or the keys expire. Ignored when `keys_ttl` is 0."
   default     = 7
   nullable    = false
 
@@ -46,8 +46,8 @@ variable "keys_rotation_window" {
 }
 
 variable "keys_ttl" {
-  description = "TTL of IAM keys in days."
   type        = number
+  description = "TTL of IAM keys in days."
   default     = 0
   nullable    = false
 
@@ -58,8 +58,8 @@ variable "keys_ttl" {
 }
 
 variable "max_cpu" {
-  description = "Maximum number of CPU units for your database."
   type        = number
+  description = "Maximum number of CPU units for your database."
   default     = 15
   nullable    = false
 
@@ -75,8 +75,8 @@ variable "max_cpu" {
 }
 
 variable "min_cpu" {
-  description = "Minimum number of CPU units for your database."
   type        = number
+  description = "Minimum number of CPU units for your database."
   default     = 0
   nullable    = false
 
@@ -87,24 +87,24 @@ variable "min_cpu" {
 }
 
 variable "name" {
-  description = "Name of the database. Changing it recreates the database, and its data is lost."
   type        = string
+  description = "Name of the database. Changing it recreates the database, and its data is lost."
 }
 
 variable "postgresql_version" {
-  description = "PostgreSQL major version of the database, e.g. `16`. The API's default version is used when null. Changing it recreates the database, and its data is lost: see the README to upgrade."
   type        = string
+  description = "PostgreSQL major version of the database, e.g. `16`. The API's default version is used when null. Changing it recreates the database, and its data is lost: see the README to upgrade."
   default     = null
 }
 
 variable "project_id" {
-  description = "ID of the project the database is associated with. Resource will be created in the project set at the provider level if null. Changing it recreates the database, and its data is lost."
   type        = string
+  description = "ID of the project the database is associated with. Resource will be created in the project set at the provider level if null. Changing it recreates the database, and its data is lost."
   default     = null
 }
 
 variable "region" {
-  description = "Region in which the database should be created, e.g. `fr-par`. Resource will be created in the region set at the provider level if null. Changing it recreates the database, and its data is lost."
   type        = string
+  description = "Region in which the database should be created, e.g. `fr-par`. Resource will be created in the region set at the provider level if null. Changing it recreates the database, and its data is lost."
   default     = null
 }
