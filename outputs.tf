@@ -22,40 +22,40 @@ output "access" {
 
 output "database_endpoint" {
   description = "Endpoint of the database."
-  value       = scaleway_sdb_sql_database.main.endpoint
+  value       = scaleway_sdb_sql_database.this.endpoint
 }
 
 output "database_id" {
   description = "ID of the database, in the `{region}/{id}` format."
-  value       = scaleway_sdb_sql_database.main.id
+  value       = scaleway_sdb_sql_database.this.id
 }
 
 output "database_name" {
   description = "Name of the database."
-  value       = scaleway_sdb_sql_database.main.name
+  value       = scaleway_sdb_sql_database.this.name
 }
 
 output "database_project_id" {
   description = "ID of the project the database is associated with."
-  value       = scaleway_sdb_sql_database.main.project_id
+  value       = scaleway_sdb_sql_database.this.project_id
 }
 
 output "database_region" {
   description = "Region of the database."
-  value       = scaleway_sdb_sql_database.main.region
+  value       = scaleway_sdb_sql_database.this.region
 }
 
 output "database_srn" {
   description = "Scaleway Resource Name (SRN) of the database."
-  value       = scaleway_sdb_sql_database.main.srn
+  value       = scaleway_sdb_sql_database.this.srn
 }
 
 output "database_version" {
   description = "PostgreSQL major version of the database."
-  value       = scaleway_sdb_sql_database.main.version
+  value       = scaleway_sdb_sql_database.this.version
 }
 
 output "database_version_end_of_life_at" {
   description = "End of life date of the PostgreSQL version of the database (RFC 3339 format)."
-  value       = scaleway_sdb_sql_database.main.version_end_of_life_at
+  value       = scaleway_sdb_sql_database.this.version_end_of_life_at
 }
