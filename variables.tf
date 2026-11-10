@@ -40,7 +40,7 @@ variable "keys_rotation_window" {
   }
 
   validation {
-    condition     = coalesce(var.keys_ttl, 0) <= 0 || var.keys_rotation_window < var.keys_ttl
+    condition     = var.keys_ttl <= 0 || var.keys_rotation_window < var.keys_ttl
     error_message = "'keys_rotation_window' must be lower than 'keys_ttl'."
   }
 }
